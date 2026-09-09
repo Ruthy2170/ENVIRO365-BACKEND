@@ -2,9 +2,12 @@ package com.enviro.assessment.junior.moipone.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.enviro.assessment.junior.moipone.entity.Investment;
+import com.enviro.assessment.junior.moipone.exception.ResourceNotFoundException;
 import com.enviro.assessment.junior.moipone.repository.InvestmentRepository;
 
 @Service
@@ -16,13 +19,15 @@ public class InvestmentService {
         this.investmentRepository = investmentRepository;
     }
 
-    public List<Investment> getAllInvestments() {
-        return investmentRepository.findAll();
+    public Page<Investment> getAllInvestments(Pageable pageable) {
+        return investmentRepository.findAll(pageable);
     }
 
     public Investment getInvestmentById(Long id) {
-        return investmentRepository.findById(id).orElse(null);
-
+        return investmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                "Investment not found with id: " + id
+        ));
     }
 
     public List<Investment> getInvestmentsByInvestorId(String investorId) {
